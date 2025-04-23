@@ -8,9 +8,14 @@ enum Instruction {
     Sub,
     Mul,
     Div,
+    Ceq,
+    Cgt,
+    Clt,
+    Dup,
+    Pop,
 }
 
-fn parse_instruction(token: &str) -> Option<Instruction> {
+fn parse_texto(token: &str) -> Option<Instruction> {
     if token.starts_with("ldc:") {
         let value = token[4..].parse::<f64>().ok()?;
         Some(Instruction::Ldc(value))
@@ -21,6 +26,11 @@ fn parse_instruction(token: &str) -> Option<Instruction> {
             "sub" => Some(Instruction::Sub),
             "mul" => Some(Instruction::Mul),
             "div" => Some(Instruction::Div),
+            "ceq" => Some(Instruction::Ceq),
+            "cgt" => Some(Instruction::Cgt),
+            "clt" => Some(Instruction::Clt),
+            "dup" => Some(Instruction::Dup),
+            "pop" => Some(Instruction::Pop),
             _ => None,
         }
     }
@@ -55,6 +65,29 @@ fn execute(instructions: Vec<Instruction>, stack: &mut Vec<f64>) {
                     stack.push(a / b);
                 }
             }
+            Instruction::Ceq => {
+                if let (Some(b), Some(a)) = (stack.pop(), stack.pop()) {
+                    stack.push(if a == b { 1.0 } else { 0.0 });
+                }
+            }
+            Instruction::Cgt => {
+                if let (Some(b), Some(a)) = (stack.pop(), stack.pop()) {
+                    stack.push(if a > b { 1.0 } else { 0.0 });
+                }
+            }
+            Instruction::Clt => {
+                if let (Some(b), Some(a)) = (stack.pop(), stack.pop()) {
+                    stack.push(if a < b { 1.0 } else { 0.0 });
+                }
+            }
+            Instruction::Dup => {
+                if let Some(x) = stack.last() {
+                    stack.push(*x);
+                }
+            }
+            Instruction::Pop => {
+                stack.pop();
+            }
         }
     }
 }
@@ -67,7 +100,7 @@ fn main() {
         let line = line.unwrap();
         let instructions: Vec<Instruction> = line
             .split_whitespace()
-            .filter_map(parse_instruction)
+            .filter_map(parse_texto)
             .collect();
 
         execute(instructions, &mut stack);
