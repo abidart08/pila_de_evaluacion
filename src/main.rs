@@ -5,16 +5,16 @@ use std::io::{self, BufRead};
 #[derive(Debug)]
 enum Instruction {
     Ldc(f64), // Carga un número en la pila
-    Neg,      // Cambia el signo del número en la cima de la pila
-    Add,      // Suma los dos números en la cima de la pila
-    Sub,      // Resta los dos números en la cima de la pila
-    Mul,      // Multiplica los dos números en la cima de la pila
-    Div,      // Divide los dos números en la cima de la pila
-    Ceq,      // Compara si los dos números en la cima de la pila son iguales
+    Neg,      // Cambia el signo del número en el tope de la pila
+    Add,      // Suma los dos números en el tope de la pila
+    Sub,      // Resta los dos números en el tope de la pila
+    Mul,      // Multiplica los dos números en el tope de la pila
+    Div,      // Divide los dos números en el tope de la pila
+    Ceq,      // Compara si los dos números en el tope de la pila son iguales
     Cgt,      // Compara si el penúltimo número es mayor que el último en la pila
     Clt,      // Compara si el penúltimo número es menor que el último en la pila
-    Dup,      // Duplica el número en la cima de la pila
-    Pop,      // Elimina el número en la cima de la pila
+    Dup,      // Duplica el número en el tope de la pila
+    Pop,      // Elimina el número en el tope de la pila
 }
 
 // Función que convierte un token de texto en una instrucción
@@ -48,37 +48,37 @@ fn execute(instructions: Vec<Instruction>, stack: &mut Vec<f64>) {
         match instr {
             // Carga un número en la pila
             Instruction::Ldc(n) => stack.push(n),
-            // Cambia el signo del número en la cima de la pila
+            // Cambia el signo del número en el tope de la pila
             Instruction::Neg => {
                 if let Some(x) = stack.pop() {
                     stack.push(-x);
                 }
             }
-            // Suma los dos números en la cima de la pila
+            // Suma los dos números en el tope de la pila
             Instruction::Add => {
                 if let (Some(b), Some(a)) = (stack.pop(), stack.pop()) {
                     stack.push(a + b);
                 }
             }
-            // Resta los dos números en la cima de la pila
+            // Resta los dos números en el tope de la pila
             Instruction::Sub => {
                 if let (Some(b), Some(a)) = (stack.pop(), stack.pop()) {
                     stack.push(a - b);
                 }
             }
-            // Multiplica los dos números en la cima de la pila
+            // Multiplica los dos números en el tope de la pila
             Instruction::Mul => {
                 if let (Some(b), Some(a)) = (stack.pop(), stack.pop()) {
                     stack.push(a * b);
                 }
             }
-            // Divide los dos números en la cima de la pila
+            // Divide los dos números en el tope de la pila
             Instruction::Div => {
                 if let (Some(b), Some(a)) = (stack.pop(), stack.pop()) {
                     stack.push(a / b);
                 }
             }
-            // Compara si los dos números en la cima de la pila son iguales
+            // Compara si los dos números en el tope de la pila son iguales
             Instruction::Ceq => {
                 if let (Some(b), Some(a)) = (stack.pop(), stack.pop()) {
                     stack.push(if a == b { 1.0 } else { 0.0 });
@@ -96,13 +96,13 @@ fn execute(instructions: Vec<Instruction>, stack: &mut Vec<f64>) {
                     stack.push(if a < b { 1.0 } else { 0.0 });
                 }
             }
-            // Duplica el número en la cima de la pila
+            // Duplica el número en el tope de la pila
             Instruction::Dup => {
                 if let Some(x) = stack.last() {
                     stack.push(*x);
                 }
             }
-            // Elimina el número en la cima de la pila
+            // Elimina el número en el tope de la pila
             Instruction::Pop => {
                 stack.pop();
             }
